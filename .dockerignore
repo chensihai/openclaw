@@ -5,6 +5,10 @@
 # into the project root; keep it out of the build context.
 .env
 .env.*
+.config
+**/.config
+openclaw-data
+**/openclaw-data
 
 .bun-cache
 .bun

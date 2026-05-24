@@ -1,0 +1,18 @@
+FROM debian:bookworm-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  curl ca-certificates python3 \
+  && rm -rf /var/lib/apt/lists/*
+
+ARG GOGCLI_VERSION=0.9.0
+RUN curl -L https://github.com/steipete/gogcli/releases/download/v${GOGCLI_VERSION}/gogcli_${GOGCLI_VERSION}_linux_amd64.tar.gz \
+  | tar -xz -C /usr/local/bin \
+  && chmod +x /usr/local/bin/gog
+
+WORKDIR /app
+COPY gog-wrapper/gog_api.py /app/gog_api.py
+
+ENV PORT=8080
+EXPOSE 8080
+
+ENTRYPOINT ["python3", "/app/gog_api.py"]
