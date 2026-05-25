@@ -1,0 +1,58 @@
+services:
+  openclaw-gateway:
+    ports:
+      - "18789:18789"
+    command:
+      [
+        "node",
+        "dist/index.js",
+        "gateway",
+        "--bind",
+        "${OPENCLAW_GATEWAY_BIND:-lan}",
+        "--port",
+        "18789",
+      ]    
+    volumes:
+      - ./openclaw-data:/home/node/.openclaw
+      - /var/run/docker.sock:/var/run/docker.sock # Add this
+      - ./skills/gog-live:/app/skills/gog-live:ro
+    networks:
+      - openclaw-net
+
+  # openclaw-cli:
+  #   networks:
+  #     - default
+
+  gog-svc:
+    build:
+      context: .
+      dockerfile: Dockerfile.gog
+    image: local/gog:latest
+    command: ["auth", "list"]
+    environment:
+      - GOG_KEYRING_PASSWORD=herewego
+    volumes:
+      - ./.config/gogcli:/root/.config/gogcli
+    networks:
+      - openclaw-net
+
+  gog-live:
+    build:
+      context: .
+      dockerfile: Dockerfile.gog_live
+    image: local/gog-live:latest
+    environment:
+      - GOG_KEYRING_PASSWORD=herewego
+      - GOG_API_KEY=change-me
+      - PORT=8082
+    volumes:
+      - ./.config/gogcli:/root/.config/gogcli
+    networks:
+      - openclaw-net
+networks:
+  openclaw-net:
+    driver: bridge
+volumes:
+  gog-auth:
+    name: gog-auth
+    driver: local

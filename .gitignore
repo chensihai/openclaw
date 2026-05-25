@@ -2,8 +2,6 @@ node_modules
 **/node_modules/
 .env
 .config
-config
-docker-compose.override.yml
 docker-compose.extra.yml
 docker-compose.sandbox.yml
 dist
